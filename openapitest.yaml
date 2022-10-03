@@ -1,0 +1,180 @@
+# <======OASドキュメント
+openapi: "3.0.0"
+# OASドキュメント======>
+
+# <======API情報
+info:
+  title: Open API Test
+  version: "1.0.0"
+# API情報======>
+
+# <======コンポーネント一覧
+components:                                            # 再利用可能なオブジェクトのセット
+  # <======schemas
+  schemas:                                             # 再利用可能なスキーマ
+    # <======testスキーマ
+    test:                                              # 再利用可能なスキーマの名前
+      type: object                                     # JSON Schema
+      description: A test
+      required: # 必須プロパティのリスト
+        - reference
+        - name
+        - price
+        - supplier
+      properties:
+        reference:
+          description: unique ID identifying a test
+          type: string
+          example: "001"
+        name:
+          type: string
+          example: TEST_A
+        price:
+          description: in USD
+          type: number
+          example: 500
+        description:
+          type: string
+          example: This is TEST_A
+        supplier:
+          type: object
+          description: Test's supplier
+          required:
+            - reference
+            - name
+          properties:
+            reference:
+              type: string
+              description: Supplier's unique identifier
+              example: admin001
+            name:
+              type: string
+              example: admin
+    # testスキーマ======>
+  # schemas======>
+
+  # <======parameters
+  parameters:                                          # 再利用可能なパラメータ
+    # <======testId
+    testId:                                            # 再利用可能なパラメータの名前
+      name: testId                                     # パスパラメータの名前
+      in: path                                         # パラメータの場所
+      required: true                                   # 必須パラメータかどうか
+      description: Test's reference
+      schema:
+        type: string
+    # testId======>
+  # parameters======>
+
+  # <======security
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: SSID
+  # security======>
+# コンポーネント一覧======>
+
+# <======security
+security:
+  - CookieAuth: []                                     # すべての操作にCookie認証を適用
+# security======>
+
+# <======API リソース
+paths:                                                 # pathプロパティ
+
+  # <======リソース
+  # <====== /testリソース
+  /test:                                               # リソースのパス
+    description: The Test List                         # リソースの説明
+
+    # <======アクション
+    # <======getアクション
+    get:                                               # アクションのHTTPメソッド
+      summary: Search for test                         # アクションの短い説明
+      description: |                                   # アクションの長い説明
+        Search for test in list
+        using a free query parameter
+      parameters:                                      # アクションのパラメータリスト（ボディを除く)
+        - name: search                                 # パラメータの名前
+          description: |                               # パラメータの説明
+            A test's name, refrence, or
+            partial description
+          in: query                                    # パラメータの場所
+          required: false                              # パラメータが必須かどうか
+          schema:                                      # パラメータのデータ構造の説明
+            type: string                               # パラメータの型
+      responses:                                       # アクションのレスポンスリスト
+        "200":                                         # HTTPステータス
+          description: |                               # レスポンスの説明
+            Test matching free query parameter
+          content:                                     # レスポンスのボディの定義
+            application/json:                          # レスポンスのボディのメディアタイプ
+              schema:                                  # レスポンスのボディのJSON Schema
+                type: array                            # レスポンスの型は配列
+                description: Array of test
+                items:                                 # レスポンスのボディの中身（配列の要素）
+                  $ref: "#/components/schemas/test"    # 定義済みのスキーマを参照
+      security:                                        # セキュリティオブジェクト
+        - CookieAuth: []                               # 仕様するセキュリティを定義する
+    # getアクション======>
+
+    # <======postアクション
+    post:                                              # アクションのHTTPメソッド
+      summary: Add test                                # アクションの短い説明
+      description: |                                   # アクションの長い説明
+        Add test (described in test info parameter) to list
+      requestBody:                                     # ボディパラメータの定義
+        description: Test's information                # ボディパラメータの説明
+        content:
+          appliacation/json:                           # ボディパラメータのメディアタイプ
+            schema:                                    # ボディパラメータのJSON Schema
+              $ref: "#/components/schemas/test"        # 定義済みのスキーマを参照
+      responses:                                       # アクションのレスポンスリスト
+        "200":
+          description: |                               # レスポンスの説明
+            Test added to list
+    # postアクション======>
+    # アクション======>
+
+  # /testリソース======>
+
+  # <======/test/{testId}リソース
+  /test/{testId}:                                      # リソースのパス {}はパスパラメータ
+    description: A Test
+
+    # <======deleteアクション
+    delete:                                            # 削除アクション
+      summary: Delete a test
+      parameters:                                      # 削除するアクションのパラメータ
+        - $ref: "#/components/parameters/testId"       # 定義済みのパラメータを参照
+      responses:
+        "200":
+          description: |
+            Test added to list
+    # deleteアクション======>
+
+    # <======putアクション
+    put:
+      summary: Put a test
+      parameters:
+        - $ref: "#/components/parameters/testId"       # 定義済みのパラメータを参照
+      responses:
+        "200":
+          description: |
+            Test added to list
+    # putアクション======>
+
+    # <======patchアクション
+    patch:
+      summary: patch a test
+      parameters:
+        - $ref: "#/components/parameters/testId"       # 定義済みのパラメータを参照
+      responses:
+        "200":
+          description: |
+            Test added to list
+    # patchアクション======>
+  # /test/{testId}リソース======>
+  # リソース======>
+# API リソース======>
