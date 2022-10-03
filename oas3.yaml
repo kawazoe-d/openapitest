@@ -9,7 +9,7 @@ info:
 # API情報======>
 
 # <======コンポーネント一覧
-components:                                            # 再利用可能なコンポーネント
+components:                                            # 再利用可能なオブジェクトのセット
   # <======schemas
   schemas:                                             # 再利用可能なスキーマ
     # <======testスキーマ
@@ -40,7 +40,7 @@ components:                                            # 再利用可能なコ�
           type: object
           description: Test's supplier
           required:
-            - reference
+            - referencecookieAuth
             - name
           properties:
             reference:
@@ -65,7 +65,20 @@ components:                                            # 再利用可能なコ�
         type: string
     # testId======>
   # parameters======>
+
+  # <======security
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SSID
+  # security======>
 # コンポーネント一覧======>
+
+# <======security
+security:
+  - cookieAuth: []                                     # すべての操作にCookie認証を適用
+# security======>
 
 # <======API リソース
 paths:                                                 # pathプロパティ
@@ -77,8 +90,8 @@ paths:                                                 # pathプロパティ
 
     # <======アクション
     # <======getアクション
-    get: # アクションのHTTPメソッド
-      summary: Search for test                                # アクションの短い説明
+    get:                                               # アクションのHTTPメソッド
+      summary: Search for test                         # アクションの短い説明
       description: |                                   # アクションの長い説明
         Search for test in list
         using a free query parameter
@@ -102,6 +115,8 @@ paths:                                                 # pathプロパティ
                 description: Array of test
                 items:                                 # レスポンスのボディの中身（配列の要素）
                   $ref: "#/components/schemas/test"    # 定義済みのスキーマを参照
+      security:                                        # セキュリティオブジェクト
+        - cookieAuth: []                               # 仕様するセキュリティを定義する
     # getアクション======>
 
     # <======postアクション
